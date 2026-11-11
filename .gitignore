@@ -1,0 +1,19 @@
+# Data and footage: never commit (privacy + size)
+data/
+footage/
+*.geojson
+*.mp4
+*.MP4
+*.zip
+
+# Course materials, graded submissions, old files: keep private
+Archive/
+*.docx
+Alhathal_AAI590_*
+Capostone Guidelines*
+
+# Python / Jupyter / editor / macOS clutter
+__pycache__/
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
