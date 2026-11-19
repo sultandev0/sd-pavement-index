@@ -16,7 +16,7 @@ from PIL import Image
 
 ROOT    = Path(__file__).resolve().parent.parent
 SESSION = "10-25-2026-Mira-Mesa"
-FOOTAGE = Path("/Users/waelsultan/dashcam_footage") / SESSION
+FOOTAGE = Path.home() / "dashcam_footage" / SESSION
 OUT     = ROOT / "data/v0_blind"
 KEY     = OUT / "_answer_key_DO_NOT_OPEN.csv"
 SHEET   = OUT / "my_ratings.csv"

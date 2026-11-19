@@ -1,0 +1,117 @@
+{
+ "_about": "Frozen pipeline rules for the AAI-590 dashcam PCI capstone. Frozen 2026-11-14 (Day 4B), after the V3 mask review and survivorship audit and BEFORE any embedding-based model result. Every later script reads this file; change it only with a dated note in 'changes' and report both versions.",
+ "frozen": "2026-11-14",
+ "changes": [
+  "2026-11-14 (same session, before any real V6/V7 run; no rule changed): added 'stale_set' (the V7/H3 data the sampler did not produce before) and a printed V7 GUARD line. The v6_v7.py selftest showed that a model with no signal passes V7 whenever the stale segments' 2023 labels average below the training mean (real data: stale ~49 vs primary ~68), so V7 is reported together with the mean predictor's value and is not read as evidence of signal on its own.",
+  "2026-11-15 (Day 5; records events of Day 4C and Day 5; NO rule changed). (1) Day 4C sampler deviations, per run, measured before use: 11-14-2026-Encanto planned with 'sample_frames.py plan --min-lag -1 --clock-shift 2' (every clip's first GPS fix 1 s before its filename time; V2 seed 596 FAIL 4/10 with burned-in positions consistently ~1.9 s behind the control drives; after the shift V2 seed 616 FAIL 9/10, one 29-mph frame 0.0003 deg off, kept). 11-13-2026-SE-SD V2 seed 594 FAIL 9/10 (burned-in clock +2 s late in a clip, position exact), kept. V6 and V7 ran once with this file at SHA-256 be58155b (V6 PASS: MAE 13.22 vs 25.93, Spearman 0.75; V7 PASS 85.3 vs 55.7, mean predictor 63.0). (2) 11-15-2026-Uptown, the last drive (camera set to standard time: clock error 0): V2 seed 597 FAIL 9/10 (clock +2 s late in a clip; all 10 positions within 0.0001); burned-in positions put Uptown ~1 s from the control drives and an automatic -2 s clock-sync correction on clip 003451F looked like a missing-fix artifact (~1 s the other way); both within the stated +-1 s alignment, kept. V3-local seed 607 FAIL 13/20: SegFormer-B0 leaves light concrete roadway untinted (7 frames, all concrete); Uptown tiles kept 0.59 vs 0.84-0.93 on the other drives, and on Uptown rejection tracked condition. Per the V3-local rule (Day 4C) Uptown is EXCLUDED from every analysis set. Analysis dataset = the Day 4C tables (data/modeling_4C: 5 drives, 173 primary, 181 secondary, 52 stale), identical to the rebuilt tables minus Uptown. (3) The model ladder (rungs 1-5, leave-street-out and leave-area-out, Gate 2 rule, H3 design, MIL grid, ablations) was pre-registered in the header and constants of 05_training/ladder.py (SHA-256 f3e15a48) before any ladder result."
+ ],
+ "frame_sampling": {
+  "script": "01_data_collection/sample_frames.py",
+  "spacing_m": 7.0,
+  "max_gps_gap_s": 1.5,
+  "segment_assignment": "both bracketing 1 Hz fixes passed every Gate 0 rule and snapped to the same clean segment",
+  "gate0_rules": {
+   "snap_m": 20,
+   "heading_max_deg_axial": 30,
+   "end_buffer_m": 15,
+   "speed_mph": [
+    3,
+    60
+   ]
+  },
+  "clock": "per-clip whole-hour error {0, -3600 s} + start lag 0-3 s; clock-sync correction when a clip's lag differs from the drive's usual lag by > 1 s",
+  "extraction": "one ffmpeg call per frame, software decoding, JPEG q2, native 3840x2160"
+ },
+ "mask": {
+  "script": "04_pipeline_design/road_masks.py",
+  "model": "nvidia/segformer-b0-finetuned-cityscapes-1024-1024",
+  "hood_crop_bottom_frac": 0.1,
+  "work_size_wh": [
+   2048,
+   1024
+  ],
+  "normalization": "ImageNet mean/std",
+  "upsampling": "bilinear on logits at the working size, then argmax (M6)",
+  "road_class_id": 0,
+  "batch": 1
+ },
+ "strip": {
+  "script": "04_pipeline_design/embed_tiles.py",
+  "tile_px": 252,
+  "rows": 1,
+  "bottom_frac": 0.9,
+  "x_left_frac": 0.1,
+  "x_right_frac": 0.6,
+  "tiles_per_frame": 7,
+  "resize": "none (native resolution, no center crop)"
+ },
+ "tile_rule": {
+  "road_share_min": 0.98,
+  "min_tiles_per_frame": 2,
+  "non_road_handling": "reject (ImageNet-mean fill = ablation only)"
+ },
+ "end_trim_ahead_m": 30,
+ "end_trim_ablations_m": [
+  15,
+  37
+ ],
+ "min_frames_per_segment": 3,
+ "embedding": {
+  "model": "facebook/dinov2-small",
+  "normalization": "ImageNet mean/std, applied by hand",
+  "tile_vectors_stored": [
+   "cls",
+   "patch_mean"
+  ],
+  "primary_vector": "concat_cls_patchmean",
+  "primary_dim": 768,
+  "ablation_vectors": [
+   "cls",
+   "patch_mean"
+  ],
+  "frame_vector": "mean of the frame's kept tiles"
+ },
+ "handcrafted_rung3": {
+  "features": [
+   "gray_mean",
+   "gray_std",
+   "lap_var"
+  ],
+  "pixels": "road pixels of kept tiles",
+  "frame_value": "mean of the frame's kept tiles"
+ },
+ "pooling_and_models": {
+  "ridge_V6_and_rung4": "per segment: mean and std of the frame vectors, concatenated",
+  "attention_mil_rung5": "bag = segment, instance = frame vector (tile-level instances = ablation)"
+ },
+ "analysis_sets": {
+  "alleys": "excluded from every set (name contains the word ALLEY, frozen 2026-11-13)",
+  "primary": "in_clean_set & is_residential & ~is_alley, usable (>= 3 kept frames)",
+  "secondary": "in_clean_set & ~is_alley, usable (adds arterials)"
+ },
+ "gates": {
+  "V5_as_preregistered": ">= 150 clean usable segments (Gate 0), >= 2 planning areas",
+  "V6_V7_count_only_if": ">= 150 PRIMARY usable segments across >= 2 planning areas with >= 20 each",
+  "V6": "ridge on pooled (mean+std) primary vectors vs mean predictor, CV grouped by street: MAE >= 10% below the mean predictor AND Spearman >= 0.3",
+  "V7": "mean prediction on stale segments > their mean 2023 label",
+  "preliminary_V6": "not run before the gate is met (decided 2026-11-14)",
+  "V7_guard": "context only: also print the mean predictor's value for the stale set; if it also exceeds the stale labels, V7 alone is not evidence of signal"
+ },
+ "evidence_2026_11_14": {
+  "V3": "50/50 masks acceptable (seed 592, pre-registered >= 45/50) -> PASS",
+  "intersection_paint": "6/50 review frames had paint in a kept tile; distance to the segment end ahead 24, 24, 28, 29, 35, 36 m; none in 39 frames >= 40 m",
+  "end_trim_cost_primary": "15 m: 1,340 frames / 84 segments; 30 m: 1,195 / 84; 37 m: 1,107 / 78",
+  "survivorship": "Spearman(PCI, share of tiles kept) = -0.01; tiles kept 0.87-0.92 in every band; non-road pixels are sidewalk/car in every band",
+  "worst_pci_page": "cracks, patches and a manhole in Very Poor/Serious frames are tinted as road inside kept tiles",
+  "V4": "mask 0.49 + embed 0.11 = 0.59 s/frame -> 1,440 frames 14 min, ~3,000 frames 30 min -> PASS (< 60 min); extraction ~0.28 s/frame reported separately",
+  "mask_batching": "batch 1: 0.47 s/frame, batch 4: 5.5 s/frame on mps (first 572 frames were masked at batch 4; same model and preprocessing)"
+ },
+ "stale_set": {
+  "definition": "driven segments that are labeled and stale (is_stale in segments_clean.csv: latest repair ended on/after 2023-02-01)",
+  "frames": "same sampler rules as the clean set; separate table frames_<SESSION>__stale.csv and folder data/frames/<SESSION>__stale/",
+  "rules": "same mask, strip, tile rule, end trim and >= 3 frames as the primary set",
+  "set_stale": "usable, residential, non-alley",
+  "use": "V7 and the H3 check only; never trained on",
+  "context_subset": "repaired_after_survey_end = last repair ended after 2023-08-31 (survey ran Feb-Aug 2023)"
+ }
+}

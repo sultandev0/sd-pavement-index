@@ -12,7 +12,7 @@ import pandas as pd
 
 ROOT    = Path(__file__).resolve().parent.parent
 SESSION = "10-25-2026-Mira-Mesa"
-FOOTAGE = Path("/Users/waelsultan/dashcam_footage") / SESSION
+FOOTAGE = Path.home() / "dashcam_footage" / SESSION
 B       = ROOT / "data/v0_blind"
 
 res = pd.read_csv(B / "v0_result.csv")
