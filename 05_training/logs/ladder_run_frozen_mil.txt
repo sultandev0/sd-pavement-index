@@ -1,0 +1,69 @@
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim30 | vector concat | pooling mean_std | tag frozen_mil
+173 primary segments, 64 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 62, GREATER GOLDEN HILL 45, SKYLINE-PARADISE HILLS 23, SOUTHEASTERN SAN DIEGO 22, MIRA MESA 21 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+MIL on CPU; leave-street-out inner folds 5 (from bench.json)
+   rungs 1-4 done in 68 s; MIL: 6 settings x 3 checkpoints per inner fold
+   MIL fold 1/5: dropout 0.5, weight decay 0.01, 100 epochs (inner MAE 16.80, 5 inner folds) | 138 s
+   MIL fold 2/5: dropout 0.5, weight decay 0.0001, 200 epochs (inner MAE 14.73, 5 inner folds) | 278 s
+   MIL fold 3/5: dropout 0.5, weight decay 0.0001, 200 epochs (inner MAE 14.62, 5 inner folds) | 421 s
+   MIL fold 4/5: dropout 0.25, weight decay 0.001, 200 epochs (inner MAE 15.67, 5 inner folds) | 564 s
+   MIL fold 5/5: dropout 0.5, weight decay 0.001, 200 epochs (inner MAE 16.79, 5 inner folds) | 711 s
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 173 segments, 64 streets | 780 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                                                       chosen (outer folds)
+1 mean predictor             25.926  29.392    -0.171            0.439              35.572                                                                                                          -
+2a metadata ridge            12.263  15.785     0.752            0.821              15.267                                                                                    10, 3.16228, 10, 10, 10
+2b metadata boosting         11.483  15.470     0.811            0.832              13.873                                     d2/lr0.1/100, d2/lr0.03/100, d2/lr0.03/300, d2/lr0.1/300, d2/lr0.1/100
+3 hand-crafted ridge         22.626  27.160     0.370            0.549              28.821                                                                               0.01, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               13.219  17.382     0.753            0.827              13.999                                                                        100, 316.228, 316.228, 316.228, 100
+5 attention-MIL              14.131  18.272     0.713            0.809              13.997  do0.5/wd0.01/100ep, do0.5/wd0.0001/200ep, do0.5/wd0.0001/200ep, do0.25/wd0.001/200ep, do0.5/wd0.001/200ep
+combined 2a+4 (exploratory)  11.622  14.513     0.813            0.879              13.285                                                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  5 attention-MIL  combined 2a+4 (exploratory)
+band                                                                                                                                                           
+Good          49              30.7               11.3                  10.5                  25.1            14.8             18.4                         12.8
+Satisfactory  42              16.4                7.1                   7.2                  17.3            11.2             11.0                          7.2
+Fair          20               4.3               16.1                  15.6                   8.6            11.3             10.6                         12.9
+Poor          14              17.8               17.7                  17.4                  14.9            12.0             13.7                         10.8
+Very Poor     21              31.2                9.5                  10.3                  26.6             9.2             11.0                          8.2
+Serious       19              44.9               15.3                  12.2                  34.9            15.4             11.6                         15.2
+Failed         8              56.1               26.0                  21.0                  44.6            26.8             28.1                         26.4
+GATE 2: 4 DINOv2 ridge 13.22 vs 2b metadata boosting 11.48 -> difference +1.74 (95% CI -0.90 to +4.15, bootstrap over streets) -> comparable
+context: 5 attention-MIL 14.13 vs 2b metadata boosting 11.48 -> difference +2.65 (95% CI -0.28 to +5.36, bootstrap over streets) -> comparable
+   rungs 1-4 done in 27 s; MIL: 6 settings x 3 checkpoints per inner fold
+   MIL fold 1/5: dropout 0.5, weight decay 0.01, 200 epochs (inner MAE 22.58, 4 inner folds) | 103 s
+   MIL fold 2/5: dropout 0.5, weight decay 0.01, 200 epochs (inner MAE 22.33, 4 inner folds) | 213 s
+   MIL fold 3/5: dropout 0.5, weight decay 0.001, 200 epochs (inner MAE 13.12, 4 inner folds) | 318 s
+   MIL fold 4/5: dropout 0.25, weight decay 0.0001, 100 epochs (inner MAE 18.30, 4 inner folds) | 442 s
+   MIL fold 5/5: dropout 0.25, weight decay 0.0001, 100 epochs (inner MAE 15.39, 4 inner folds) | 558 s
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 173 segments, 64 streets | 585 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                                                       chosen (outer folds)
+1 mean predictor             26.729  30.164    -0.333            0.439              34.765                                                                                                          -
+2a metadata ridge            15.162  20.294     0.631            0.821              19.022                                                                                    3.16228, 0.01, 10, 1, 1
+2b metadata boosting         14.431  19.904     0.673            0.827              18.871                                  d3/lr0.03/100, d2/lr0.03/100, d3/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100
+3 hand-crafted ridge         22.510  27.260     0.368            0.543              29.575                                                                                  1, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               15.667  20.810     0.676            0.740              19.009                                                                         316.228, 316.228, 100, 316.228, 10
+5 attention-MIL              16.907  21.703     0.669            0.728              20.217  do0.5/wd0.01/200ep, do0.5/wd0.01/200ep, do0.5/wd0.001/200ep, do0.25/wd0.0001/100ep, do0.25/wd0.0001/100ep
+combined 2a+4 (exploratory)  13.661  17.537     0.760            0.827              16.495                                                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  5 attention-MIL  combined 2a+4 (exploratory)
+band                                                                                                                                                           
+Good          49              33.3               14.7                  12.8                  25.0            15.7             17.7                         14.6
+Satisfactory  42              17.7                7.7                   7.9                  15.7            11.9             13.1                          8.0
+Fair          20               4.9               20.1                  18.3                   8.8            13.1             12.7                         14.4
+Poor          14              16.4               22.5                  17.2                  14.1            13.8             18.2                         13.4
+Very Poor     21              29.8               13.8                  10.8                  27.0            11.4             12.1                          8.6
+Serious       19              44.6               16.8                  21.1                  36.8            22.6             19.4                         19.6
+Failed         8              56.4               31.7                  37.7                  46.4            39.4             46.9                         35.6
+GATE 2: 4 DINOv2 ridge 15.67 vs 2b metadata boosting 14.43 -> difference +1.24 (95% CI -2.15 to +4.42, bootstrap over streets) -> comparable
+context: 5 attention-MIL 16.91 vs 2b metadata boosting 14.43 -> difference +2.48 (95% CI -0.84 to +5.70, bootstrap over streets) -> comparable
+
+=== H3: 52 stale segments on 31 streets (each predicted by models that never saw its street)
+  mean 2023 label 55.7 | mean predictor (guard) 63.0 | metadata ridge (2a) 55.7 | DINOv2 ridge (4) 84.6
+  images - metadata: +28.9 points (95% CI +18.3 to +40.9, bootstrap over streets); images higher on 47/52 segments
+  repaved after the survey ended (n=46): label 53.4 | metadata 53.4 | images 85.2
+
+saved: data/modeling_4C/ladder/frozen_mil/ (results, per_band_mae, gate2, oof_predictions, mil_choices, h3_stale_predictions)

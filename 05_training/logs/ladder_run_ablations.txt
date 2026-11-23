@@ -1,0 +1,235 @@
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim15 | vector concat | pooling mean_std | tag trim15
+178 primary segments, 64 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 63, GREATER GOLDEN HILL 46, SKYLINE-PARADISE HILLS 25, SOUTHEASTERN SAN DIEGO 23, MIRA MESA 21 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 178 segments, 64 streets | 64 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                      chosen (outer folds)
+1 mean predictor             25.835  29.197    -0.155            0.444              34.319                                                                         -
+2a metadata ridge            12.977  16.680     0.739            0.798              14.966                                                         10, 10, 1, 10, 10
+2b metadata boosting         12.347  16.347     0.780            0.826              14.543  d2/lr0.03/100, d2/lr0.1/300, d2/lr0.03/100, d3/lr0.03/100, d2/lr0.03/300
+3 hand-crafted ridge         21.725  26.278     0.420            0.579              27.012                                                    0.01, 1, 0.01, 0.01, 1
+4 DINOv2 ridge               14.370  18.799     0.732            0.781              16.031                                   316.228, 316.228, 316.228, 100, 316.228
+combined 2a+4 (exploratory)  12.566  15.715     0.794            0.854              14.312                                                                         -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              31.3               12.7                  10.8                  24.6            16.3                         13.9
+Satisfactory  43              16.6                7.7                   7.9                  16.1            10.7                          7.5
+Fair          20               4.3               18.5                  18.4                   9.2            11.8                         14.5
+Poor          16              16.6               16.9                  15.3                  11.9            11.0                         11.2
+Very Poor     23              30.8               10.8                  12.7                  26.0            12.8                         10.5
+Serious       19              44.5               14.5                  13.0                  33.9            17.9                         15.9
+Failed         8              55.7               24.4                  22.0                  43.9            30.8                         27.6
+GATE 2: 4 DINOv2 ridge 14.37 vs 2b metadata boosting 12.35 -> difference +2.02 (95% CI -0.59 to +4.38, bootstrap over streets) -> comparable
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 178 segments, 64 streets | 51 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                       chosen (outer folds)
+1 mean predictor             26.723  30.027    -0.332            0.444              33.765                                                                          -
+2a metadata ridge            15.592  20.670     0.619            0.809              19.435                                          3.16228, 0.01, 10, 0.01, 0.316228
+2b metadata boosting         14.439  19.779     0.685            0.815              18.953  d3/lr0.03/100, d2/lr0.03/100, d3/lr0.03/100, d3/lr0.03/100, d3/lr0.03/100
+3 hand-crafted ridge         22.080  26.733     0.395            0.551              28.542                                            0.01, 0.01, 3.16228, 0.01, 0.01
+4 DINOv2 ridge               16.345  21.226     0.679            0.713              20.611                                      316.228, 1000, 316.228, 316.228, 0.01
+combined 2a+4 (exploratory)  14.087  17.848     0.758            0.803              16.994                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              33.6               15.3                  11.7                  24.3            14.8                         14.2
+Satisfactory  43              18.2                8.0                   8.9                  15.8            12.6                          9.1
+Fair          20               5.0               19.8                  18.2                   8.9            14.0                         15.0
+Poor          16              16.5               22.9                  18.6                  13.9            17.0                         14.0
+Very Poor     23              29.4               14.8                  11.1                  25.6            14.4                         10.2
+Serious       19              44.2               16.9                  21.0                  36.7            23.0                         19.7
+Failed         8              56.0               32.0                  37.3                  46.9            40.1                         36.0
+GATE 2: 4 DINOv2 ridge 16.35 vs 2b metadata boosting 14.44 -> difference +1.91 (95% CI -1.11 to +4.81, bootstrap over streets) -> comparable
+
+saved: data/modeling_4C/ladder/trim15/ (results, per_band_mae, gate2, oof_predictions)
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim37 | vector concat | pooling mean_std | tag trim37
+162 primary segments, 63 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 62, GREATER GOLDEN HILL 43, SOUTHEASTERN SAN DIEGO 21, SKYLINE-PARADISE HILLS 20, MIRA MESA 16 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 162 segments, 63 streets | 64 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                      chosen (outer folds)
+1 mean predictor             25.303  28.921    -0.129            0.444              35.857                                                                         -
+2a metadata ridge            11.367  14.896     0.739            0.864              13.183                                    10, 3.16228, 3.16228, 3.16228, 3.16228
+2b metadata boosting         11.214  15.096     0.765            0.858              13.276  d2/lr0.03/300, d2/lr0.03/100, d2/lr0.03/300, d2/lr0.03/100, d3/lr0.1/100
+3 hand-crafted ridge         22.075  26.556     0.358            0.568              28.347                                          0.01, 0.01, 0.316228, 0.01, 0.01
+4 DINOv2 ridge               13.394  17.550     0.741            0.840              16.773                                          100, 0.01, 100, 316.228, 316.228
+combined 2a+4 (exploratory)  11.240  14.001     0.809            0.895              13.308                                                                         -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          46              30.0               11.1                  10.1                  25.4            14.0                         12.0
+Satisfactory  40              15.8                6.3                   7.1                  16.9             8.4                          6.1
+Fair          20               4.0               17.0                  16.2                   7.3            12.6                         14.1
+Poor          12              16.7               17.8                  12.8                  12.9            13.7                         10.8
+Very Poor     20              31.9                9.1                  12.6                  26.1            12.1                          9.2
+Serious       17              45.7               11.4                  10.7                  35.4            18.2                         14.4
+Failed         7              56.1               21.3                  22.1                  44.2            31.9                         26.6
+GATE 2: 4 DINOv2 ridge 13.39 vs 2b metadata boosting 11.21 -> difference +2.18 (95% CI -0.64 to +4.64, bootstrap over streets) -> comparable
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 162 segments, 63 streets | 51 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                       chosen (outer folds)
+1 mean predictor             26.264  29.796    -0.322            0.444              35.105                                                                          -
+2a metadata ridge            13.526  17.985     0.678            0.852              16.307                                  3.16228, 0.01, 3.16228, 3.16228, 0.316228
+2b metadata boosting         13.096  17.768     0.689            0.852              16.729  d3/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100
+3 hand-crafted ridge         22.681  27.621     0.301            0.568              31.213                                               3.16228, 0.01, 1, 0.01, 0.01
+4 DINOv2 ridge               15.504  20.199     0.689            0.759              18.561                                316.228, 316.228, 316.228, 316.228, 31.6228
+combined 2a+4 (exploratory)  12.915  16.449     0.754            0.858              15.431                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          46              32.7               13.8                  12.8                  25.3            15.3                         13.8
+Satisfactory  40              17.3                6.2                   6.3                  15.7            11.6                          7.3
+Fair          20               4.7               19.8                  17.2                   6.8            15.2                         15.1
+Poor          12              16.2               19.7                  12.3                  15.1            13.2                         14.6
+Very Poor     20              30.4               11.2                   9.9                  27.6            12.4                          7.4
+Serious       17              45.3               14.9                  20.4                  40.1            21.3                         18.0
+Failed         7              56.4               28.4                  35.1                  47.8            39.0                         33.7
+GATE 2: 4 DINOv2 ridge 15.50 vs 2b metadata boosting 13.10 -> difference +2.41 (95% CI -0.50 to +5.29, bootstrap over streets) -> comparable
+
+saved: data/modeling_4C/ladder/trim37/ (results, per_band_mae, gate2, oof_predictions)
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim30 | vector cls | pooling mean_std | tag vec_cls
+173 primary segments, 64 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 62, GREATER GOLDEN HILL 45, SKYLINE-PARADISE HILLS 23, SOUTHEASTERN SAN DIEGO 22, MIRA MESA 21 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 173 segments, 64 streets | 65 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                    chosen (outer folds)
+1 mean predictor             25.926  29.392    -0.171            0.439              35.572                                                                       -
+2a metadata ridge            12.263  15.785     0.752            0.821              15.267                                                 10, 3.16228, 10, 10, 10
+2b metadata boosting         11.483  15.470     0.811            0.832              13.873  d2/lr0.1/100, d2/lr0.03/100, d2/lr0.03/300, d2/lr0.1/300, d2/lr0.1/100
+3 hand-crafted ridge         22.626  27.160     0.370            0.549              28.821                                            0.01, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               13.985  18.123     0.741            0.798              15.496                                     100, 316.228, 316.228, 316.228, 100
+combined 2a+4 (exploratory)  12.001  14.953     0.806            0.861              14.035                                                                       -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              30.7               11.3                  10.5                  25.1            15.4                         13.0
+Satisfactory  42              16.4                7.1                   7.2                  17.3            11.0                          7.2
+Fair          20               4.3               16.1                  15.6                   8.6            12.2                         13.3
+Poor          14              17.8               17.7                  17.4                  14.9            12.1                         10.7
+Very Poor     21              31.2                9.5                  10.3                  26.6            10.1                          8.8
+Serious       19              44.9               15.3                  12.2                  34.9            18.5                         16.7
+Failed         8              56.1               26.0                  21.0                  44.6            28.6                         27.3
+GATE 2: 4 DINOv2 ridge 13.98 vs 2b metadata boosting 11.48 -> difference +2.50 (95% CI +0.01 to +4.80, bootstrap over streets) -> metadata better
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 173 segments, 64 streets | 51 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                       chosen (outer folds)
+1 mean predictor             26.729  30.164    -0.333            0.439              34.765                                                                          -
+2a metadata ridge            15.162  20.294     0.631            0.821              19.022                                                    3.16228, 0.01, 10, 1, 1
+2b metadata boosting         14.431  19.904     0.673            0.827              18.871  d3/lr0.03/100, d2/lr0.03/100, d3/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100
+3 hand-crafted ridge         22.510  27.260     0.368            0.543              29.575                                                  1, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               16.673  21.985     0.646            0.705              20.184                                             316.228, 100, 100, 316.228, 10
+combined 2a+4 (exploratory)  14.050  17.888     0.746            0.803              16.825                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              33.3               14.7                  12.8                  25.0            16.7                         15.2
+Satisfactory  42              17.7                7.7                   7.9                  15.7            12.2                          8.4
+Fair          20               4.9               20.1                  18.3                   8.8            15.1                         14.5
+Poor          14              16.4               22.5                  17.2                  14.1            15.8                         14.0
+Very Poor     21              29.8               13.8                  10.8                  27.0            11.5                          8.1
+Serious       19              44.6               16.8                  21.1                  36.8            24.8                         20.7
+Failed         8              56.4               31.7                  37.7                  46.4            39.6                         35.7
+GATE 2: 4 DINOv2 ridge 16.67 vs 2b metadata boosting 14.43 -> difference +2.24 (95% CI -1.11 to +5.53, bootstrap over streets) -> comparable
+
+saved: data/modeling_4C/ladder/vec_cls/ (results, per_band_mae, gate2, oof_predictions)
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim30 | vector patch_mean | pooling mean_std | tag vec_patch_mean
+173 primary segments, 64 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 62, GREATER GOLDEN HILL 45, SKYLINE-PARADISE HILLS 23, SOUTHEASTERN SAN DIEGO 22, MIRA MESA 21 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 173 segments, 64 streets | 63 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                    chosen (outer folds)
+1 mean predictor             25.926  29.392    -0.171            0.439              35.572                                                                       -
+2a metadata ridge            12.263  15.785     0.752            0.821              15.267                                                 10, 3.16228, 10, 10, 10
+2b metadata boosting         11.483  15.470     0.811            0.832              13.873  d2/lr0.1/100, d2/lr0.03/100, d2/lr0.03/300, d2/lr0.1/300, d2/lr0.1/100
+3 hand-crafted ridge         22.626  27.160     0.370            0.549              28.821                                            0.01, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               13.185  17.763     0.748            0.844              13.649                                         31.6228, 100, 100, 316.228, 100
+combined 2a+4 (exploratory)  11.713  14.656     0.810            0.884              13.360                                                                       -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              30.7               11.3                  10.5                  25.1            15.0                         12.8
+Satisfactory  42              16.4                7.1                   7.2                  17.3            11.4                          7.4
+Fair          20               4.3               16.1                  15.6                   8.6            11.2                         13.0
+Poor          14              17.8               17.7                  17.4                  14.9             9.1                         10.7
+Very Poor     21              31.2                9.5                  10.3                  26.6             9.9                          8.5
+Serious       19              44.9               15.3                  12.2                  34.9            15.3                         15.0
+Failed         8              56.1               26.0                  21.0                  44.6            27.5                         26.8
+GATE 2: 4 DINOv2 ridge 13.19 vs 2b metadata boosting 11.48 -> difference +1.70 (95% CI -1.13 to +4.32, bootstrap over streets) -> comparable
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 173 segments, 64 streets | 50 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                       chosen (outer folds)
+1 mean predictor             26.729  30.164    -0.333            0.439              34.765                                                                          -
+2a metadata ridge            15.162  20.294     0.631            0.821              19.022                                                    3.16228, 0.01, 10, 1, 1
+2b metadata boosting         14.431  19.904     0.673            0.827              18.871  d3/lr0.03/100, d2/lr0.03/100, d3/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100
+3 hand-crafted ridge         22.510  27.260     0.368            0.543              29.575                                                  1, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               15.021  20.182     0.700            0.775              18.313                                            100, 316.228, 100, 316.228, 100
+combined 2a+4 (exploratory)  13.724  17.535     0.762            0.832              17.078                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              33.3               14.7                  12.8                  25.0            14.9                         14.0
+Satisfactory  42              17.7                7.7                   7.9                  15.7            11.6                          7.9
+Fair          20               4.9               20.1                  18.3                   8.8            12.3                         15.1
+Poor          14              16.4               22.5                  17.2                  14.1            10.7                         14.5
+Very Poor     21              29.8               13.8                  10.8                  27.0            11.5                          9.5
+Serious       19              44.6               16.8                  21.1                  36.8            22.2                         19.3
+Failed         8              56.4               31.7                  37.7                  46.4            40.4                         36.0
+GATE 2: 4 DINOv2 ridge 15.02 vs 2b metadata boosting 14.43 -> difference +0.59 (95% CI -3.03 to +3.97, bootstrap over streets) -> comparable
+
+saved: data/modeling_4C/ladder/vec_patch_mean/ (results, per_band_mae, gate2, oof_predictions)
+MODEL LADDER | ladder.py f3e15a48db18 | rules be58155b143d | modeling_4C/trim30 | vector concat | pooling mean | tag pool_mean
+173 primary segments, 64 streets | drives: 10-25-2026-Mira-Mesa, 11-11-2026-Pacific-Beach, 11-12-2026-Golden-Hill, 11-13-2026-SE-SD, 11-14-2026-Encanto
+area groups: PACIFIC BEACH 62, GREATER GOLDEN HILL 45, SKYLINE-PARADISE HILLS 23, SOUTHEASTERN SAN DIEGO 22, MIRA MESA 21 | merged (< 10): BALBOA PARK -> GREATER GOLDEN HILL
+
+=== LEAVE-STREET-OUT (outer 5 folds by street, inner 5 by street) | 173 segments, 64 streets | 65 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                    chosen (outer folds)
+1 mean predictor             25.926  29.392    -0.171            0.439              35.572                                                                       -
+2a metadata ridge            12.263  15.785     0.752            0.821              15.267                                                 10, 3.16228, 10, 10, 10
+2b metadata boosting         11.483  15.470     0.811            0.832              13.873  d2/lr0.1/100, d2/lr0.03/100, d2/lr0.03/300, d2/lr0.1/300, d2/lr0.1/100
+3 hand-crafted ridge         22.626  27.160     0.370            0.549              28.821                                            0.01, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               14.023  17.996     0.736            0.803              16.396                             316.228, 316.228, 316.228, 316.228, 316.228
+combined 2a+4 (exploratory)  11.780  14.719     0.802            0.867              14.116                                                                       -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              30.7               11.3                  10.5                  25.1            15.0                         12.7
+Satisfactory  42              16.4                7.1                   7.2                  17.3             9.1                          6.2
+Fair          20               4.3               16.1                  15.6                   8.6            14.4                         14.0
+Poor          14              17.8               17.7                  17.4                  14.9            14.3                         12.1
+Very Poor     21              31.2                9.5                  10.3                  26.6            12.0                          8.4
+Serious       19              44.9               15.3                  12.2                  34.9            16.5                         15.7
+Failed         8              56.1               26.0                  21.0                  44.6            31.6                         28.8
+GATE 2: 4 DINOv2 ridge 14.02 vs 2b metadata boosting 11.48 -> difference +2.54 (95% CI -0.02 to +4.90, bootstrap over streets) -> comparable
+
+=== LEAVE-AREA-OUT (outer 5 area groups, inner: one training area held out at a time) | 173 segments, 64 streets | 50 s
+                                MAE    RMSE  Spearman  within_one_band  MAE_Poor_to_Failed                                                       chosen (outer folds)
+1 mean predictor             26.729  30.164    -0.333            0.439              34.765                                                                          -
+2a metadata ridge            15.162  20.294     0.631            0.821              19.022                                                    3.16228, 0.01, 10, 1, 1
+2b metadata boosting         14.431  19.904     0.673            0.827              18.871  d3/lr0.03/100, d2/lr0.03/100, d3/lr0.03/100, d2/lr0.03/100, d2/lr0.03/100
+3 hand-crafted ridge         22.510  27.260     0.368            0.543              29.575                                                  1, 0.01, 0.01, 0.01, 0.01
+4 DINOv2 ridge               15.909  20.682     0.678            0.751              19.948                                            1000, 1000, 316.228, 1000, 1000
+combined 2a+4 (exploratory)  14.211  17.831     0.753            0.821              17.702                                                                          -
+
+MAE by band (PCI points):
+               n  1 mean predictor  2a metadata ridge  2b metadata boosting  3 hand-crafted ridge  4 DINOv2 ridge  combined 2a+4 (exploratory)
+band                                                                                                                                          
+Good          49              33.3               14.7                  12.8                  25.0            15.6                         14.5
+Satisfactory  42              17.7                7.7                   7.9                  15.7            10.9                          8.2
+Fair          20               4.9               20.1                  18.3                   8.8            14.7                         15.3
+Poor          14              16.4               22.5                  17.2                  14.1            13.4                         15.5
+Very Poor     21              29.8               13.8                  10.8                  27.0            12.2                          9.5
+Serious       19              44.6               16.8                  21.1                  36.8            23.4                         19.9
+Failed         8              56.4               31.7                  37.7                  46.4            43.7                         37.7
+GATE 2: 4 DINOv2 ridge 15.91 vs 2b metadata boosting 14.43 -> difference +1.48 (95% CI -2.04 to +4.80, bootstrap over streets) -> comparable
+
+saved: data/modeling_4C/ladder/pool_mean/ (results, per_band_mae, gate2, oof_predictions)
